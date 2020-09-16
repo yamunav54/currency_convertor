@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    {% load static %}
+
+    <link rel="stylesheet" href="{% static 'app/css/bootstrap.min.css' %}">
+    <script src="{% static 'app/js/jquery-3.5.1.min.js' %}"></script>
+    <script src="{% static 'app/js/popper.min.js' %}"></script>
+    <script src="{% static 'app/js/bootstrap.min.js' %}"></script>
+    <script src="{% static 'app/js/bootstrap-select.min.js' %}"></script>
+    <title>Currency Convertor</title>
+
+</head>
+
+<body>
+    <div class="container-fluid">
+        <nav class="navbar  navbar-expand-lg navbar-dark bg-dark">
+            <a class="navbar-brand" href="{% url 'index' %}">Currency Convertor</a>
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
+                aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+
+            <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                {% if user.is_authenticated %}
+                <ul class="navbar-nav mr-auto">
+                    <li class="nav-item active">
+                        <a class="btn btn-outline-success" href="{% url 'index' %}">Home <span
+                                class="sr-only">(current)</span></a>
+                    </li>
+                    <li class="nav-item active">
+                        <a class="btn btn-outline-success" href="{% url 'getToken' %}">Token <span
+                                class="sr-only">(current)</span></a>
+                    </li>
+                    
+                </ul>
+                
+                
+                <button class="btn btn-success">{{user.username}}</button>
+                <a class="btn btn-outline-danger my-2 my-sm-0" href="/logout">Logout</a>
+                {% else %}
+                <a class="btn btn-outline-success my-2 my-sm-0" href="/login">Login</a>
+                {% endif %}
+               
+            </div>
+        </nav>
+        <div class="card">
+            <div class="card-body">
+
+                {% block content %}
+
+                {% endblock %}
+
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

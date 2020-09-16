@@ -1,0 +1,50 @@
+{% extends 'app/base.html' %}
+
+{% block content %}
+
+{% load crispy_forms_tags %}
+
+<form action="" method="POST" class="form-group">
+    {% csrf_token %}
+    {{form|crispy}}
+    Click here to Read and accept <a href="#"><span data-toggle="modal" data-target="#exampleModalCenter">Terms and Condition</span></a>
+    <br>
+    <hr>
+    <button type="submit" class="btn btn-success">Register</button>
+</form>
+<div class="modal fade" id="exampleModalCenter" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+      <div class="modal-content">
+        <div class="modal-header justify-content-center">
+          <h5 class="modal-title" id="exampleModalLongTitle">Terms and Conditions</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <p style="font-size: small;">
+            Praesent sapien massa, convallis a pellentesque nec, egestas non nisi. Donec sollicitudin molestie malesuada. Praesent sapien massa, convallis a pellentesque nec, egestas non nisi. Curabitur aliquet quam id dui posuere blandit. Nulla porttitor accumsan tincidunt. Vivamus suscipit tortor eget felis porttitor volutpat. Curabitur arcu erat, accumsan id imperdiet et, porttitor at sem. Cras ultricies ligula sed magna dictum porta.<br/><br/>Vivamus suscipit tortor eget felis porttitor volutpat. Curabitur aliquet quam id dui posuere blandit. Nulla quis lorem ut libero malesuada feugiat. Mauris blandit aliquet elit, eget tincidunt nibh pulvinar a. Nulla porttitor accumsan tincidunt. Curabitur arcu erat, accumsan id imperdiet et, porttitor at sem. Curabitur non nulla sit amet nisl tempus convallis quis ac lectus. Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia Curae; Donec velit neque, auctor sit amet aliquam vel, ullamcorper sit amet ligula.
+          </p>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+          <button id="terms" type="button" class="btn btn-primary">Accept</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <script>
+      $(document).ready(function(){
+            var tc_excpeted = false;
+            $("#terms").click(function(){
+                tc_excpeted = true;
+                // alter("here");
+                $("#id_terms_confirmed").prop("checked", true);
+                $("#exampleModalCenter").modal("hide");
+            });
+
+          
+
+      });
+  </script>
+{% endblock %}

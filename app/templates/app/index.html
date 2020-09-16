@@ -1,0 +1,160 @@
+{% extends 'app/base.html' %}
+
+
+{% block content %}
+    {% if user.is_authenticated %}
+        <div class="row justify-content-center" >
+            <h1 class="card-title">Convert Currency</h1>
+        </div>
+        <div class="row justify-content-around rounded" style="background-color: #3366cc;margin-top: 10px; padding: 10px;">    
+            <div class="form-group">
+                <form method="POST" >
+                    <div class="form-group">
+                        <input type="number" class="form-control" placeholder="Enter Amount" id="amount">
+                    </div>
+                    <div class="form-group">
+                    <label for="flat_cur">From Currency:</label>
+                        <select class="form-control" id="flat_cur">
+                            
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="var_cur">To Currency:</label>
+                            <select class="form-control" id="var_cur">
+                                
+                            </select>
+                    </div>
+                        
+                    <div class="form-group">
+                        <label for="var_cur">Amount in <span id="targetlabel"></span> @ Rate : <span id="rateLabel"></span></label>
+                        <input type="number" class="form-control" value="0" id="targetamount">
+                    </div>
+                </form>
+            </div>
+        </div>
+        <script>
+            $(document).ready(function(){
+                var rest_url='/api/ratelist/flat_currencies';
+                $.ajax({
+                    headers: {
+                        'Authorization' : 'Token {{token}}'
+                    },
+                    url : rest_url,
+                    success : function(data, textStatus, xhr) {
+                        console.log(xhr.status);
+                        console.log(data)
+                        // flat_cur
+                        var options=""
+                        $(data).each(function(index,value){
+                            console.log(index);
+                            if(index == 0){
+                                populateVarCur(value.flat_currency)
+                            }
+                            options += '<option     value="'+value.flat_currency +'">'+ value.flat_currency+'</option>';
+                        });
+                        $("#flat_cur").html(options);
+                        var current_var_cur = $("#var_cur").val();
+                        console.log("VAR CUR "+ current_var_cur);
+                    },
+                    complete: function(xhr, textStatus) {
+                        console.log(xhr.status);
+                    } 
+                });
+
+                function populateVarCur(current_flat_cur){
+                    var rest_url='/api/ratelist/variable_currencies?flat_currrency='+current_flat_cur;
+                    $.ajax({
+                        headers: {
+                            'Authorization' : 'Token {{token}}'
+                        },
+                        url : rest_url,
+                        success : function(data, textStatus, xhr) {
+                            console.log(xhr.status);
+                            console.log(data)
+                            // flat_cur
+                            var options=""
+                            $(data).each(function(index,value){
+                                options += '<option     value="'+value.variable_currency +'">'+ value.variable_currency+'</option>';
+                            });
+                            $("#var_cur").html(options);
+                            var current_var_cur = $("#var_cur").val();
+                            console.log("VAR CUR "+ current_var_cur);
+                            if ( ($("#amount").val() != "") && ($("#amount").val() != 0)){
+                                console.log("Need to calculate")
+                                $("#targetlabel").html(current_var_cur)
+                                calculateTargetAmount()
+                                
+                            }
+                        },
+                        complete: function(xhr, textStatus) {
+                            console.log(xhr.status);
+                        } 
+                    });
+                    
+                }
+
+                $("#flat_cur").change(function(){
+                    var current_flat_cur = $(this).val();
+                    populateVarCur(current_flat_cur);
+                    
+                });
+
+                $("#var_cur").change(function(){
+                    var current_var_cur = $(this).val();
+                    if ( ($("#amount").val() != "") && ($("#amount").val() != 0)){
+                        console.log("Need to calculate")
+                        $("#targetlabel").html(current_var_cur);
+                        calculateTargetAmount()
+                    }
+                    
+                });
+
+                function calculateTargetAmount(){
+                    var current_var_cur = $("#var_cur").val();
+                    var current_flat_cur = $("#flat_cur").val();
+                    var amount = $("#amount").val();
+                    $("#targetlabel").html(current_var_cur);
+                    var targetAmount = 0
+                    var rest_url='/api/ratelist/rate?flat_currrency='+current_flat_cur+"&variable_currency="+current_var_cur;
+
+                    $.ajax({
+                        headers: {
+                            'Authorization' : 'Token {{token}}'
+                        },
+                        url : rest_url,
+                        success : function(data, textStatus, xhr) {
+                            console.log(xhr.status);
+                            console.log(data[0]['rate']);
+
+                            var rate = data[0]['rate'];
+                            targetAmount = amount * rate;
+                            console.log(targetAmount)
+                            $("#targetamount").val(targetAmount);
+                            $("#rateLabel").html(rate);
+                            // flat_cur
+                            // var options=""
+                            // $(data).each(function(index,value){
+                            //     options += '<option     value="'+value.variable_currency +'">'+ value.variable_currency+'</option>';
+                            // });
+
+                            
+                        },
+                        complete: function(xhr, textStatus) {
+                            console.log(xhr.status);
+                        } 
+                    });
+
+                }
+
+                $("#amount").change(function(){
+                    calculateTargetAmount();
+                });
+            });
+        </script>
+    {% else %}
+        <br>
+        <hr>
+        <center>
+        <p>Welcome to Currency Converter. <a href="/login">Please login</a> to continue</p></center>
+    {% endif %}
+{% endblock %}
